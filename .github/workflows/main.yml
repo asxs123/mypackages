@@ -73,7 +73,7 @@ jobs:
           # curl -fsSL https://raw.githubusercontent.com/P3TERX/dotfiles/master/.bashrc >> ~/.bashrc
 
       - name: Download SDK
-        run: wget https://raw.githubusercontent.com/asxs123/ceshi/openwrt_x86/sdk/istoreos-sdk-x86-64_gcc-11.2.0_musl.Linux-x86_64.tar.xz
+        run: wget -q https://raw.githubusercontent.com/asxs123/ceshi/openwrt_x86/sdk/istoreos-sdk-x86-64_gcc-11.2.0_musl.Linux-x86_64.tar.xz
 
       - name: Unpack SDK
         run: |
