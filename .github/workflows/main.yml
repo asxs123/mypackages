@@ -78,7 +78,7 @@ jobs:
       - name: Unpack SDK
         run: |
           mkdir ~/openwrt-sdk
-          tar -xJf `pwd`/${SDK_NAME}.tar.xz --strip-components=1 -C ~/openwrt-sdk
+          tar -xJf `pwd`/istoreos-sdk-x86-64_gcc-11.2.0_musl.Linux-x86_64.tar.xz --strip-components=1 -C ~/openwrt-sdk
           ln -s ${HOME}/openwrt-sdk ${SDK_NAME}
 
       - name: Clean Code
