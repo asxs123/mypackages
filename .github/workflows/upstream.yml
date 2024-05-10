@@ -7,22 +7,28 @@
 
 name: Merge-upstream 合并上游
 on:
-  push:
-    paths:
-      - '.github/workflows/upstream.yml'
-      - '.gitignore'
-      - '.github/diy/**'
-  schedule:
-    - cron: 0 */12 * * *
+  # 当代码推送到仓库时触发。
+  # push:
+  #   # 指定文件路径会触发工作流程
+  #   paths:
+  #     - '.github/workflows/upstream.yml'
+  #     - '.gitignore'
+  #     - '.github/diy/**'
+  # # 按计划定期触发，例如每 12 小时一次。
+  # schedule:
+  #   - cron: 0 */12 * * *
+  # 允许手动触发工作流程。
   workflow_dispatch:
     inputs:
       ssh:
         description: 'ssh'
         required: false
         default: 'true'
-  watch:
-    types: started
-  repository_dispatch:
+  # # 当仓库被关注时触发。
+  # watch:
+  #   types: started
+  # # 通过外部事件触发。
+  # repository_dispatch:
 
 jobs:
   merge:
@@ -47,37 +53,52 @@ jobs:
 
     - name: Syn upstream  同步上游
       run: |
+        # 启用扩展的模式匹配
         shopt -s extglob
+        # 关闭脚本中的错误终止
         set +e
+        # 从缓存中删除所有文件,不显示任何输出
         git rm -r --cache * >/dev/null 2>&1 &
+        # 删除除 .github/diy 以外的所有文件夹。find 查找当前目录下的所有文件夹，-maxdepth 0 只搜索当前目录，-type d 只搜索文件夹，! -name ".github/diy" 排除名为 .github/diy 的文件夹。
         rm -rf `find ./* -maxdepth 0 -type d ! -name ".github/diy"` >/dev/null 2>&1
         function git_clone() {
+          # 克隆指定仓库 --depth 1 只克隆最近一次提交 $1 和 $2 是函数的参数，分别表示仓库 URL 和目标目录。
           git clone --depth 1 $1 $2
           if [ "$?" != 0 ]; then
+            # 命令执行失败,输出错误信息,获取当前进程的 PID,终止当前进程
             echo "error on $1"
             pid="$( ps -q $$ )"
             kill $pid
           fi
         }
         function git_sparse_clone() {
+          # 将函数的前三个参数分别赋值给变量 branch、rurl 和 localdir，然后移除这三个参数，以便后续的参数处理
           branch="$1" rurl="$2" localdir="$3" && shift 3
+          # 克隆指定分支的仓库  -b $branch：克隆的分支  --depth 1：克隆最近一次提交  --filter=blob:none：只克隆文件结构  --sparse：稀疏克隆模式  $rurl：仓库的 URL  $localdir：目标本地目录
           git clone -b $branch --depth 1 --filter=blob:none --sparse $rurl $localdir
           if [ "$?" != 0 ]; then
             echo "error on $rurl"
             pid="$( ps -q $$ )"
             kill $pid
           fi
+          # 切换到目标本地目录
           cd $localdir
+          # 初始化稀疏检出模式
           git sparse-checkout init --cone
+          # 设置要检出的文件
           git sparse-checkout set $@
+          # 将文件移动到上一级目录，如果移动失败则继续执行
           mv -n $@ ../ || true
+          # 返回上一级目录
           cd ..
+          # 删除目标本地目录
           rm -rf $localdir
           }
         function git_sparse_clone2() {
           commitid="$1" rurl="$2" localdir="$3" && shift 3
           git clone --filter=blob:none --sparse $rurl $localdir
           cd $localdir
+          # 检出指定的提交 ID
           git checkout $commitid
           git sparse-checkout init --cone
           git sparse-checkout set $@
@@ -86,7 +107,9 @@ jobs:
           rm -rf $localdir
           }
         function mvdir() {
+        # 将指定目录下的所有文件夹移动到当前目录
         mv -n `find $1/* -maxdepth 0 -type d` ./
+        # 删除指定目录及其内容
         rm -rf $1
         }
         # (
@@ -288,6 +311,7 @@ jobs:
         # git_sparse_clone master "https://github.com/immortalwrt/luci" "immluci" applications protocols/luci-proto-minieap
         # mv -n applications/* luciapp/; rm -rf applications
 
+        # # 删除 luciapp 中包含超过 3 个文件的子目录
         # for ipk in $(ls -d luciapp/!(luci-app-rclone|luci-app-filebrowser)/); do
         # 	if [[ $(ls $ipk/po | wc -l) -gt 3 ]]; then
         #     rm -rf $ipk
@@ -299,14 +323,21 @@ jobs:
     # - name: Delete duplicated packages  删除重复的包
     #   run: |
     #     shopt -s extglob
+    #     # 将除了指定的几个子目录之外的所有文件和文件夹移动到当前目录。-n 不覆盖已存在的文件  递归地删除 luciapp 目录及其内容
     #     mv -n luciapp/!(luci-app-noddos|luci-app-cshark|luci-app-dnscrypt-proxy|luci-app-https-dns-proxy|luci-app-ssr-mudb-server|luci-app-ledtrig-*) ./ ; rm -Rf luciapp
+    #     # 将 lean 目录下的所有文件和文件夹移动到当前目录，然后删除 lean 目录
     #     mv -n lean/* ./ ; rm -Rf lean
+    #     # 将 liep 目录下的所有文件和文件夹移动到当前目录，然后删除 liep 目录
     #     mv -n liep/* ./ ; rm -Rf liep
+    #     # 将 openwrt-app-actions 目录下的所有文件和文件夹移动到当前目录，然后删除 openwrt-app-actions 目录
     #     mv -n openwrt-app-actions/applications/* ./;rm -rf openwrt-app-actions
+    #     # 递归地删除所有子目录中的 .git 文件夹
     #     rm -Rf */.git
     #     for pkg in $(ls -d .github/diy/packages/*); do
+    #       # 将每个子目录中的 Makefile.k 文件移动到同级目录，并将其重命名为 Makefile。如果移动失败，不显示错误信息
     #       mv -f $pkg/Makefile.k $pkg/Makefile >/dev/null 2>&1 || true
     #     done
+    #     # 递归地复制 .github/diy/packages 目录下的所有文件和文件夹到当前目录。如果复制失败，不显示错误信息。
     #     cp -rf .github/diy/packages/* ./ || true
     #     for pkg in $(ls -d .github/diy/packages/*); do
     #       mv -f $pkg/Makefile $pkg/Makefile.k >/dev/null 2>&1 || true
@@ -319,6 +350,18 @@ jobs:
 
     # - name: Apply patches 应用修补程序
     #   run: |
+    #     # find ".github/diy/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 -E --forward --no-backup-if-mismatch"：这一行执行了以下操作：
+    #     # 使用 find 命令查找 .github/diy/patches 目录下的所有以 .patch 结尾的文件。
+    #     # 使用 sort 命令按照零字节分隔排序文件列表。
+    #     # 使用 xargs 命令逐个处理文件，将每个文件名作为参数传递给后面的命令。
+    #     # 在每个文件上执行以下操作：
+    #     # 使用 cat 命令将文件内容输出。
+    #     # 使用 patch 命令将文件内容应用到当前目录（-d './'）并应用到路径（-p1）。
+    #     # 使用 --forward 参数确保只应用新的补丁。
+    #     # 使用 --no-backup-if-mismatch 参数以避免备份文件。
+    #     # || (curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=❌ 软件包更新失败 😂 https://github.com/kiddin9/openwrt-packages/actions" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage";exit 1)：如果前面的命令失败，执行以下操作：
+    #     # 使用 curl 命令向 Telegram 发送一条消息，通知软件包更新失败。
+    #     # 使用 exit 1 终止脚本。
     #     find ".github/diy/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 -E --forward --no-backup-if-mismatch" || (curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=❌ 软件包更新失败 😂 https://github.com/kiddin9/openwrt-packages/actions" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage";exit 1)
 
     # - name: Modify 修改
@@ -431,17 +474,25 @@ jobs:
 
     - name: Apply 应用
       run: |
+        # 定义了一个数组 Emoji，其中包含了多个不同的 emoji 表情
         Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
+        # 将当前目录下的所有文件添加到 Git 暂存区
         git add .
+        # 创建一个提交，包含了随机选择的 emoji 和当前日期时间作为提交信息
         git commit -m "${Emoji[$[$RANDOM % ${#Emoji[@]}]]} Sync $(date +%Y-%m-%d" "%H:%M:%S)"
+        # 遍历 Git 提交中的文件
         for pkg in $(git diff-tree --no-commit-id --name-only HEAD); do
+          # 检查每个文件的 Makefile 中是否包含了 PKG_RELEASE 字段
           if [ "$(grep "PKG_RELEASE" $pkg/Makefile)" ]; then
+            # 如果包含了 PKG_RELEASE，则使用 sed 命令替换其值为当前 master 分支的提交数
             sed -i "s/PKG_RELEASE:=.*/PKG_RELEASE:=$(git rev-list --count master $pkg)/" $pkg/Makefile || true
           fi
         done
+        # 撤销上一次提交，但保留更改
         git reset --soft HEAD^
         git add .
         git commit -m "${Emoji[$[$RANDOM % ${#Emoji[@]}]]} Sync $(date +%Y-%m-%d" "%H:%M:%S)"
+        # 强制推送更改到远程仓库
         git push -f
 
     - name: Delete workflow runs 删除工作流运行
