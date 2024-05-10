@@ -85,11 +85,11 @@ jobs:
         run: |
           rm -f ${SDK_NAME}/package/linux/modules/*
           rm -f ${SDK_NAME}/package/kernel/linux/modules/*
-          grep -lFr '$(call KernelPackage,' ${SDK_NAME}/package/linux | xargs -rn1 sed -i 's/ FILES:=/ XFILES:=/g' || true
-          grep -lFr '$(call KernelPackage,' ${SDK_NAME}/package/kernel | xargs -rn1 sed -i 's/ FILES:=/ XFILES:=/g' || true
+          grep -lFr '$(call KernelPackage,' istoreos-sdk-x86-64_gcc-11.2.0_musl.Linux-x86_64/package/linux | xargs -rn1 sed -i 's/ FILES:=/ XFILES:=/g' || true
+          grep -lFr '$(call KernelPackage,' istoreos-sdk-x86-64_gcc-11.2.0_musl.Linux-x86_64/package/kernel | xargs -rn1 sed -i 's/ FILES:=/ XFILES:=/g' || true
           find ${SDK_NAME}/target/linux -name 'modules.mk' | xargs -rn1 sed -i 's/ FILES:=/ XFILES:=/g' || true
-          grep 'src-git base ' ${SDK_NAME}/feeds.conf.default > ${SDK_NAME}/feeds.conf
-          grep 'src-git luci ' ${SDK_NAME}/feeds.conf.default >> ${SDK_NAME}/feeds.conf
+          grep 'src-git base ' istoreos-sdk-x86-64_gcc-11.2.0_musl.Linux-x86_64/feeds.conf.default > ${SDK_NAME}/feeds.conf
+          grep 'src-git luci ' istoreos-sdk-x86-64_gcc-11.2.0_musl.Linux-x86_64/feeds.conf.default >> ${SDK_NAME}/feeds.conf
 
       - name: Write Config
         run: |
