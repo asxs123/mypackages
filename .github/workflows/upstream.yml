@@ -324,28 +324,28 @@ jobs:
 
         # git_sparse_clone master "https://github.com/coolsnowwolf/lede" "leanlede" package/lean package/qca/shortcut-fe package/network/services/shellsync
 
-    # - name: Delete duplicated packages  删除重复的包
-    #   run: |
-    #     shopt -s extglob
-    #     # 将除了指定的几个子目录之外的所有文件和文件夹移动到当前目录。-n 不覆盖已存在的文件  递归地删除 luciapp 目录及其内容
-    #     mv -n luciapp/!(luci-app-noddos|luci-app-cshark|luci-app-dnscrypt-proxy|luci-app-https-dns-proxy|luci-app-ssr-mudb-server|luci-app-ledtrig-*) ./ ; rm -Rf luciapp
-    #     # 将 lean 目录下的所有文件和文件夹移动到当前目录，然后删除 lean 目录
-    #     mv -n lean/* ./ ; rm -Rf lean
-    #     # 将 liep 目录下的所有文件和文件夹移动到当前目录，然后删除 liep 目录
-    #     mv -n liep/* ./ ; rm -Rf liep
-    #     # 将 openwrt-app-actions 目录下的所有文件和文件夹移动到当前目录，然后删除 openwrt-app-actions 目录
-    #     mv -n openwrt-app-actions/applications/* ./;rm -rf openwrt-app-actions
-    #     # 递归地删除所有子目录中的 .git 文件夹
-    #     rm -Rf */.git
-    #     for pkg in $(ls -d .github/diy/packages/*); do
-    #       # 将每个子目录中的 Makefile.k 文件移动到同级目录，并将其重命名为 Makefile。如果移动失败，不显示错误信息
-    #       mv -f $pkg/Makefile.k $pkg/Makefile >/dev/null 2>&1 || true
-    #     done
-    #     # 递归地复制 .github/diy/packages 目录下的所有文件和文件夹到当前目录。如果复制失败，不显示错误信息。
-    #     cp -rf .github/diy/packages/* ./ || true
-    #     for pkg in $(ls -d .github/diy/packages/*); do
-    #       mv -f $pkg/Makefile $pkg/Makefile.k >/dev/null 2>&1 || true
-    #     done
+    - name: Delete duplicated packages  删除重复的包
+      run: |
+        shopt -s extglob
+        # # 将除了指定的几个子目录之外的所有文件和文件夹移动到当前目录。-n 不覆盖已存在的文件  递归地删除 luciapp 目录及其内容
+        # mv -n luciapp/!(luci-app-noddos|luci-app-cshark|luci-app-dnscrypt-proxy|luci-app-https-dns-proxy|luci-app-ssr-mudb-server|luci-app-ledtrig-*) ./ ; rm -Rf luciapp
+        # # 将 lean 目录下的所有文件和文件夹移动到当前目录，然后删除 lean 目录
+        # mv -n lean/* ./ ; rm -Rf lean
+        # # 将 liep 目录下的所有文件和文件夹移动到当前目录，然后删除 liep 目录
+        # mv -n liep/* ./ ; rm -Rf liep
+        # 将 openwrt-app-actions 目录下的所有文件和文件夹移动到当前目录，然后删除 openwrt-app-actions 目录
+        mv -n openwrt-app-actions/applications/* ./;rm -rf openwrt-app-actions
+        # 递归地删除所有子目录中的 .git 文件夹
+        rm -Rf */.git
+        # for pkg in $(ls -d .github/diy/packages/*); do
+        #   # 将每个子目录中的 Makefile.k 文件移动到同级目录，并将其重命名为 Makefile。如果移动失败，不显示错误信息
+        #   mv -f $pkg/Makefile.k $pkg/Makefile >/dev/null 2>&1 || true
+        # done
+        # # 递归地复制 .github/diy/packages 目录下的所有文件和文件夹到当前目录。如果复制失败，不显示错误信息。
+        # cp -rf .github/diy/packages/* ./ || true
+        # for pkg in $(ls -d .github/diy/packages/*); do
+        #   mv -f $pkg/Makefile $pkg/Makefile.k >/dev/null 2>&1 || true
+        # done
 
 
     - name: SSH connection to Actions
