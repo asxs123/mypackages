@@ -333,8 +333,8 @@ jobs:
         # mv -n lean/* ./ ; rm -Rf lean
         # # 将 liep 目录下的所有文件和文件夹移动到当前目录，然后删除 liep 目录
         # mv -n liep/* ./ ; rm -Rf liep
-        # 将 openwrt-app-actions 目录下的所有文件和文件夹移动到当前目录，然后删除 openwrt-app-actions 目录
-        mv -n openwrt-app-actions/applications/* ./;rm -rf openwrt-app-actions
+        # # 将 openwrt-app-actions 目录下的所有文件和文件夹移动到当前目录，然后删除 openwrt-app-actions 目录
+        # mv -n openwrt-app-actions/applications/* ./;rm -rf openwrt-app-actions
         # 递归地删除所有子目录中的 .git 文件夹
         rm -Rf */.git
         # for pkg in $(ls -d .github/diy/packages/*); do
