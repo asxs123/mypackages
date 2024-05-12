@@ -140,21 +140,21 @@ jobs:
       uses: kiddin9/debugger-action@master
       if: github.event.inputs.ssh == 'true'
 
-    # - name: Apply patches 应用修补程序
-    #   run: |
-    #     # find ".github/diy/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 -E --forward --no-backup-if-mismatch"：这一行执行了以下操作：
-    #     # 使用 find 命令查找 .github/diy/patches 目录下的所有以 .patch 结尾的文件。
-    #     # 使用 sort 命令按照零字节分隔排序文件列表。
-    #     # 使用 xargs 命令逐个处理文件，将每个文件名作为参数传递给后面的命令。
-    #     # 在每个文件上执行以下操作：
-    #     # 使用 cat 命令将文件内容输出。
-    #     # 使用 patch 命令将文件内容应用到当前目录（-d './'）并应用到路径（-p1）。
-    #     # 使用 --forward 参数确保只应用新的补丁。
-    #     # 使用 --no-backup-if-mismatch 参数以避免备份文件。
-    #     # || (curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=❌ 软件包更新失败 😂 https://github.com/kiddin9/openwrt-packages/actions" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage";exit 1)：如果前面的命令失败，执行以下操作：
-    #     # 使用 curl 命令向 Telegram 发送一条消息，通知软件包更新失败。
-    #     # 使用 exit 1 终止脚本。
-    #     find ".github/diy/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 -E --forward --no-backup-if-mismatch" || (curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=❌ 软件包更新失败 😂 https://github.com/kiddin9/openwrt-packages/actions" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage";exit 1)
+    - name: Apply patches 应用修补程序
+      run: |
+        # find ".github/diy/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 -E --forward --no-backup-if-mismatch"：这一行执行了以下操作：
+        # 使用 find 命令查找 .github/diy/patches 目录下的所有以 .patch 结尾的文件。
+        # 使用 sort 命令按照零字节分隔排序文件列表。
+        # 使用 xargs 命令逐个处理文件，将每个文件名作为参数传递给后面的命令。
+        # 在每个文件上执行以下操作：
+        # 使用 cat 命令将文件内容输出。
+        # 使用 patch 命令将文件内容应用到当前目录（-d './'）并应用到路径（-p1）。
+        # 使用 --forward 参数确保只应用新的补丁。
+        # 使用 --no-backup-if-mismatch 参数以避免备份文件。
+        # || (curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=❌ 软件包更新失败 😂 https://github.com/kiddin9/openwrt-packages/actions" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage";exit 1)：如果前面的命令失败，执行以下操作：
+        # 使用 curl 命令向 Telegram 发送一条消息，通知软件包更新失败。
+        # 使用 exit 1 终止脚本。
+        find ".github/diy/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 -E --forward --no-backup-if-mismatch" || (curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=❌ 软件包更新失败 😂 https://github.com/kiddin9/openwrt-packages/actions" "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage";exit 1)
 
     - name: Modify
       run: |
