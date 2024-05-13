@@ -114,7 +114,7 @@ jobs:
           git_clone https://github.com/sirpdboy/luci-app-ddns-go ddns-go1 && mvdir ddns-go1
           git_clone https://github.com/sbwml/openwrt-alist && mvdir openwrt-alist
           git_clone https://github.com/vernesong/OpenClash && mv -n OpenClash/luci-app-openclash ./; rm -rf OpenClash
-          git_clone https://github.com/xiaorouji/openwrt-passwall-packages && rm -rf openwrt-passwall-packages/chinadns-ng && mvdir openwrt-passwall-packages
+          git_clone https://github.com/xiaorouji/openwrt-passwall-packages && mvdir openwrt-passwall-packages
           git_clone https://github.com/xiaorouji/openwrt-passwall2 passwall2 && mv -n passwall2/luci-app-passwall2 ./;rm -rf passwall2
         )
 
